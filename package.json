@@ -1,0 +1,73 @@
+{
+	"name": "picola",
+	"version": "0.3.4",
+	"description": "A fast, type-safe, extensible lightbox / image viewer. Framework-agnostic core with a first-class Svelte 5 adapter.",
+	"license": "MIT",
+	"author": "spuithori",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/spuithori/picola.git"
+	},
+	"keywords": [
+		"lightbox",
+		"image-viewer",
+		"gallery",
+		"zoom",
+		"svelte",
+		"typescript"
+	],
+	"type": "module",
+	"types": "./dist/core/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/core/index.d.ts",
+			"default": "./dist/core/index.js"
+		},
+		"./svelte": {
+			"types": "./dist/svelte/index.d.ts",
+			"svelte": "./dist/svelte/index.js",
+			"default": "./dist/svelte/index.js"
+		},
+		"./picola.css": "./dist/picola.css"
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*"
+	],
+	"sideEffects": [
+		"**/*.css"
+	],
+	"scripts": {
+		"dev": "vite dev --host",
+		"build": "vite build",
+		"preview": "vite preview",
+		"package": "svelte-package -i src -o dist",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"prepack": "npm run package",
+		"e2e": "playwright test"
+	},
+	"peerDependencies": {
+		"@lucide/svelte": "^1.22.0",
+		"svelte": "^5.0.0"
+	},
+	"peerDependenciesMeta": {
+		"svelte": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@lucide/svelte": "^1.24.0",
+		"@playwright/test": "^1.61.1",
+		"@sveltejs/package": "^2.5.8",
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
+		"@types/node": "^26.1.1",
+		"playwright": "^1.61.1",
+		"svelte": "^5.56.4",
+		"svelte-check": "^4.7.2",
+		"typescript": "^6.0.3",
+		"vite": "^8.1.4",
+		"vitest": "^4.1.10"
+	}
+}

@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.svelte-kit/
+playground-dist/
+bench/
+bench-dist/
+*.tgz
+.DS_Store
+*.log
+.vite/
+.claude/
+test-results/
+playwright-report/
+.idea/
