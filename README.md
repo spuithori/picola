@@ -1,10 +1,16 @@
-# picola
+<h1 align="center">
+  <img src="static/logo.svg" alt="picola" width="360">
+</h1>
 
-[![npm](https://img.shields.io/npm/v/picola?color=cb3837&logo=npm)](https://www.npmjs.com/package/picola)
-[![license](https://img.shields.io/npm/l/picola)](./LICENSE)
+<p align="center">
+  A fast, type-safe, extensible lightbox / image viewer.<br>
+  Framework-agnostic core with a first-class <strong>Svelte 5</strong> adapter.
+</p>
 
-A fast, type-safe, extensible lightbox / image viewer.
-Framework-agnostic core with a first-class **Svelte 5** adapter.
+<p align="center">
+  <a href="https://www.npmjs.com/package/picola"><img alt="npm" src="https://img.shields.io/npm/v/picola?color=cb3837&logo=npm"></a>
+  <a href="./LICENSE"><img alt="license" src="https://img.shields.io/npm/l/picola"></a>
+</p>
 
 > ⚠️ Early development. APIs may change before 1.0.
 
