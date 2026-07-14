@@ -1,6 +1,6 @@
 {
 	"name": "picola",
-	"version": "0.3.4",
+	"version": "0.3.6",
 	"description": "A fast, type-safe, extensible lightbox / image viewer. Framework-agnostic core with a first-class Svelte 5 adapter.",
 	"license": "MIT",
 	"author": "spuithori",

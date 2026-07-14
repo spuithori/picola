@@ -361,7 +361,7 @@
 									draggable="false"
 								/>
 							{/if}
-							{#key `${session}:${slide.src}`}
+							{#key session}
 								<img
 									class="pcl__img"
 									class:pcl__img--pending={!loaded[w.key]}
@@ -370,7 +370,10 @@
 									sizes={slide.sizes}
 									alt={slide.alt ?? ''}
 									draggable="false"
-									{@attach (node) => viewer?.bindImage(w.key, node as HTMLImageElement)}
+									{@attach (node) => {
+										void slide.src;
+										return viewer?.bindImage(w.key, node as HTMLImageElement);
+									}}
 								/>
 							{/key}
 						</div>

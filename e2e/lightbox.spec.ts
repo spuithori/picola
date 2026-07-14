@@ -142,6 +142,22 @@ test('source upgrades keep the previous image as underlay', async ({ page }) => 
 	await expect(page.locator('.pcl__placeholder')).toHaveCount(0);
 });
 
+test('source upgrade keeps the same <img> element (Firefox flash guard)', async ({ page }) => {
+	await page.goto('/');
+	await openAt(page, 0);
+	await page.waitForTimeout(400);
+	await page.evaluate(() => {
+		const img = document.querySelector('.pcl__content[aria-label^="1 /"] img.pcl__img') as HTMLElement;
+		img.dataset.mark = 'orig';
+	});
+	await page.evaluate(() => (window as any).__fixture.upgrade(0, '/img/full-5.png'));
+	await expect(page.locator('.pcl__img[src*="full-5"]:not(.pcl__img--pending)')).toBeVisible();
+	const mark = await page.evaluate(
+		() => (document.querySelector('.pcl__content[aria-label^="1 /"] img.pcl__img') as HTMLElement)?.dataset.mark
+	);
+	expect(mark).toBe('orig');
+});
+
 test('loop mode crosses the seam backwards', async ({ page }) => {
 	await page.goto('/?loop=1');
 	await openAt(page, 0);
