@@ -36,6 +36,14 @@
 		transitionMs?: number;
 		origin?: (index: number) => OriginRect | HTMLElement | null | undefined;
 		container?: HTMLElement;
+		/**
+		 * Render embedded in place instead of as a fullscreen overlay.
+		 * The nearest positioned ancestor defines the viewer's bounds.
+		 * Ignores `open`, `origin`, `container`, `history` and `backdropClose`;
+		 * `dismiss` defaults to disabled and Escape is never handled.
+		 * @default false
+		 */
+		inline?: boolean;
 		labels?: LightboxLabels;
 		counter?: boolean;
 		zoomButton?: boolean;
@@ -71,6 +79,7 @@
 		transitionMs = 260,
 		origin,
 		container,
+		inline = false,
 		labels,
 		counter = true,
 		zoomButton = true,
@@ -133,7 +142,7 @@
 	let previousOverflow = '';
 
 	$effect(() => {
-		const want = open;
+		const want = inline ? true : open;
 		untrack(() => {
 			if (want) beginSession();
 			else viewer?.close();
@@ -178,14 +187,15 @@
 			slideGap,
 			preload,
 			tapAction,
-			backdropClose,
+			backdropClose: inline ? false : backdropClose,
 			wheel,
 			keyboard,
-			history,
+			inline,
+			history: inline ? false : history,
 			transitionMs,
 			...(zoom ? { zoom } : {}),
-			...(dismiss ? { dismiss } : {}),
-			...(origin ? { origin } : {})
+			...(dismiss ? { dismiss } : inline ? { dismiss: { drag: false, pinch: false } } : {}),
+			...(origin && !inline ? { origin } : {})
 		});
 
 		syncedSlides = slides;
@@ -255,8 +265,10 @@
 		viewer = v;
 		visible = true;
 		session += 1;
-		previousOverflow = document.body.style.overflow;
-		document.body.style.overflow = 'hidden';
+		if (!inline) {
+			previousOverflow = document.body.style.overflow;
+			document.body.style.overflow = 'hidden';
+		}
 		v.open(index);
 		refreshWindow();
 	}
@@ -269,7 +281,7 @@
 		viewer = null;
 		visible = false;
 		closing = false;
-		document.body.style.overflow = previousOverflow;
+		if (!inline) document.body.style.overflow = previousOverflow;
 	}
 
 	$effect(() => {
@@ -279,6 +291,7 @@
 	});
 
 	function portal(node: HTMLElement) {
+		if (inline) return;
 		(container ?? document.body).appendChild(node);
 		return () => node.remove();
 	}
@@ -314,10 +327,11 @@
 {#if visible}
 	<div
 		class="pcl"
+		class:pcl--inline={inline}
 		class:pcl--ui-hidden={!uiVisible}
 		class:pcl--closing={closing}
-		role="dialog"
-		aria-modal="true"
+		role={inline ? 'region' : 'dialog'}
+		aria-modal={inline ? undefined : true}
 		aria-label={labels?.dialog ?? 'Image viewer'}
 		tabindex="-1"
 		bind:this={rootEl}
@@ -413,14 +427,16 @@
 							{#if isZoomed}<ZoomOut />{:else}<ZoomIn />{/if}
 						</button>
 					{/if}
-					<button
-						type="button"
-						class="pcl__button"
-						aria-label={labels?.close ?? 'Close'}
-						onclick={() => viewer?.close()}
-					>
-						<X />
-					</button>
+					{#if !inline}
+						<button
+							type="button"
+							class="pcl__button"
+							aria-label={labels?.close ?? 'Close'}
+							onclick={() => viewer?.close()}
+						>
+							<X />
+						</button>
+					{/if}
 				</div>
 			</div>
 

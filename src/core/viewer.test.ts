@@ -86,3 +86,18 @@ describe('Viewer loop windowing', () => {
 		expect(viewer.windowSlides().every((w) => w.key >= 0 && w.key < 2)).toBe(true);
 	});
 });
+
+describe('Viewer inline option', () => {
+	it('resolves inline and behaves normally without a DOM', () => {
+		const viewer = createViewer({ slides: [slide(0), slide(1)], inline: true });
+		expect(viewer.count).toBe(2);
+		expect(viewer.status).toBe('closed');
+		viewer.next();
+		expect(viewer.index).toBe(1);
+	});
+
+	it('defaults inline to false', () => {
+		const viewer = createViewer({ slides: [slide(0)] });
+		expect(viewer.count).toBe(1);
+	});
+});

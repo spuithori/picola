@@ -95,6 +95,14 @@
 			</button>
 		{/each}
 	</div>
+
+	<section class="inline-demo">
+		<h2>Inline mode</h2>
+		<p>固定サイズのペインに埋め込まれた常設ビューア。スワイプ・ズーム・キャプションはそのまま動作します。</p>
+		<div class="inline-pane">
+			<Lightbox inline {slides} {loop} />
+		</div>
+	</section>
 </main>
 
 <Lightbox bind:open bind:index {slides} {loop} origin={gallery.origin} history>
@@ -200,5 +208,28 @@
 		border-radius: 4px;
 		background: rgba(0, 0, 0, 0.65);
 		color: #fff;
+	}
+
+	.inline-demo {
+		margin-top: 48px;
+	}
+
+	.inline-demo h2 {
+		font-size: 20px;
+		margin: 0 0 4px;
+	}
+
+	.inline-demo p {
+		opacity: 0.7;
+		font-size: 14px;
+		margin: 0 0 16px;
+	}
+
+	.inline-pane {
+		position: relative;
+		height: 420px;
+		border-radius: 12px;
+		overflow: hidden;
+		background: #1c1c22;
 	}
 </style>

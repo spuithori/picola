@@ -51,6 +51,7 @@ interface ResolvedOptions<T> {
 	backdropClose: boolean;
 	wheelMode: 'zoom' | 'navigate' | 'none';
 	keyboard: boolean;
+	inline: boolean;
 	history: boolean;
 	transitionMs: number;
 	origin: ((index: number) => OriginRect | HTMLElement | null | undefined) | null;
@@ -141,6 +142,7 @@ export class Viewer<T = unknown> {
 			backdropClose: options.backdropClose ?? true,
 			wheelMode: options.wheel ?? (options.zoom?.wheel === false ? 'none' : 'zoom'),
 			keyboard: options.keyboard ?? true,
+			inline: options.inline ?? false,
 			history: options.history ?? false,
 			transitionMs: options.transitionMs ?? 260,
 			origin: options.origin ?? null
@@ -226,7 +228,13 @@ export class Viewer<T = unknown> {
 		resizeObserver.observe(refs.viewport);
 
 		const detachGestures = attachGestures(refs.viewport, {
-			onDown: () => this.wakeLayers(),
+			onDown: () => {
+				this.wakeLayers();
+				if (this.options.inline) {
+					const root = refs.root ?? refs.viewport;
+					if (!root.contains(document.activeElement)) root.focus({ preventScroll: true });
+				}
+			},
 			onPanStart: (axis) => this.handlePanStart(axis),
 			onPanMove: (event) => this.handlePanMove(event.dx, event.dy, event.totalX, event.totalY),
 			onPanEnd: (event) => this.handlePanEnd(event.velocityX, event.velocityY, event.totalX, event.totalY),
@@ -243,13 +251,14 @@ export class Viewer<T = unknown> {
 		refs.viewport.addEventListener('wheel', onWheel, { passive: false });
 
 		const onKeydown = (event: KeyboardEvent) => this.handleKeydown(event);
-		if (this.options.keyboard) window.addEventListener('keydown', onKeydown);
+		const keyTarget: Window | HTMLElement = this.options.inline ? (refs.root ?? refs.viewport) : window;
+		if (this.options.keyboard) keyTarget.addEventListener('keydown', onKeydown as EventListener);
 
 		this.detachRefs = () => {
 			resizeObserver.disconnect();
 			detachGestures();
 			refs.viewport.removeEventListener('wheel', onWheel);
-			window.removeEventListener('keydown', onKeydown);
+			keyTarget.removeEventListener('keydown', onKeydown as EventListener);
 			this.refs = null;
 		};
 
@@ -339,8 +348,10 @@ export class Viewer<T = unknown> {
 		this.emitChange();
 
 		if (this.options.history) this.historyBinding = bindHistory(() => this.close({ viaHistory: true }));
-		const root = this.refs.root ?? this.refs.viewport;
-		this.releaseFocus = trapFocus(root);
+		if (!this.options.inline) {
+			const root = this.refs.root ?? this.refs.viewport;
+			this.releaseFocus = trapFocus(root);
+		}
 
 		this.fadeBackdrop(this.options.backdropOpacity, this.options.transitionMs);
 
@@ -1211,7 +1222,7 @@ export class Viewer<T = unknown> {
 	private handleKeydown(event: KeyboardEvent): void {
 		if (!this.keyboardEnabled) return;
 		if (event.key === 'Escape') {
-			if (this.currentStatus === 'open' || this.currentStatus === 'opening') {
+			if (!this.options.inline && (this.currentStatus === 'open' || this.currentStatus === 'opening')) {
 				event.preventDefault();
 				this.close();
 			}

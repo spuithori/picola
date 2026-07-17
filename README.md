@@ -255,6 +255,43 @@ components through `bind:viewer`:
 {/if}
 ```
 
+### Inline / embedded viewer
+
+With `inline` the viewer renders in place — inside a pane of your layout instead
+of a fullscreen overlay. All gestures keep working: swipe paging, pinch / wheel /
+double-tap zoom, captions and the toolbar. The host element must be positioned
+(`position: relative` etc.) and have an explicit size:
+
+```svelte
+<div class="pane">
+	<Lightbox inline {slides} bind:index />
+</div>
+
+<style>
+	.pane {
+		position: relative;
+		width: 480px;
+		height: 320px;
+	}
+</style>
+```
+
+Because an inline viewer is part of the page rather than a modal, some props
+change meaning:
+
+| Prop | Inline behavior |
+| --- | --- |
+| `open` | Ignored — the viewer is visible while mounted. |
+| `origin`, `container`, `history` | Ignored (no portal, no open transition source, no history entry). |
+| `backdropClose` | Forced off. |
+| `dismiss` | Defaults to `{ drag: false, pinch: false }`. Pass an explicit `dismiss` to opt back in and route `onclose` to your own container (e.g. closing a surrounding modal). |
+| `keyboard` | Keys are scoped to the viewer root: arrows / `+` / `-` fire only while focus is inside it, and Escape is never handled — it propagates to your surrounding dialog. |
+
+There is no built-in Close button in inline mode; body scroll is never locked and
+focus is never trapped. If your app also listens for arrow keys globally, check
+`event.defaultPrevented` to skip presses the viewer already consumed. The core
+mirrors this as `ViewerOptions.inline` for framework-agnostic use.
+
 ## Styling
 
 Tune the appearance through CSS custom properties on the `.pcl` root:
@@ -272,6 +309,10 @@ Tune the appearance through CSS custom properties on the `.pcl` root:
 by default). A zero-specificity mini-reset scoped to `.pcl` ships with the
 stylesheet, so the chrome renders identically whether or not your app uses a
 global CSS reset. Transitions respect `prefers-reduced-motion`.
+
+In inline mode the root carries `.pcl--inline`, which switches the viewer to
+`position: absolute; z-index: auto` (filling its positioned ancestor) and drops
+the safe-area padding from the top bar and caption.
 
 Every default rule uses a flat single-class selector (`.pcl__button` etc.), so
 your stylesheet overrides them with normal cascade order or one extra class of
@@ -324,6 +365,7 @@ infers `T` from the `slides` you pass.
 | `wheel` | `'zoom' \| 'navigate' \| 'none'` | `'zoom'` | Wheel behavior. Trackpad pinch always zooms. |
 | `keyboard` | `boolean` | `true` | Handle Escape / arrows / `+` / `-`. |
 | `history` | `boolean` | `false` | Push a history entry so the platform back gesture closes the viewer. |
+| `inline` | `boolean` | `false` | Render embedded in place instead of as a fullscreen overlay. See [Inline / embedded viewer](#inline--embedded-viewer). |
 | `loop` | `boolean` | `false` | Wrap past the ends. Seamless with 3+ slides; wrap-around below that. |
 | `preload` | `readonly [number, number]` | `[1, 1]` | Slides kept mounted `[before, after]` the active one. |
 

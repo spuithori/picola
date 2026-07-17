@@ -88,6 +88,12 @@ export interface ViewerOptions<T = unknown> {
 	/** Arrow keys / Escape / +/- handling. @default true */
 	keyboard?: boolean;
 	/**
+	 * Embedded (non-modal) operation: keyboard listens on the root element
+	 * instead of window, Escape is ignored and focus is never trapped.
+	 * @default false
+	 */
+	inline?: boolean;
+	/**
 	 * Push a history entry while open so the platform back gesture closes
 	 * the viewer instead of leaving the page.
 	 * @default false

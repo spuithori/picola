@@ -6,6 +6,7 @@
 	const loop = params.get('loop') === '1';
 	const wheel = (params.get('wheel') ?? 'zoom') as 'zoom' | 'navigate' | 'none';
 	const useHistory = params.get('history') === '1';
+	const inlineMode = params.get('inline') === '1';
 
 	const COUNT = 6;
 	const slides: Slide[] = Array.from({ length: COUNT }, (_, i) => ({
@@ -34,27 +35,41 @@
 </script>
 
 <main>
-	<div class="grid">
-		{#each slides as slide, i (slide.src)}
-			<button
-				type="button"
-				data-testid="thumb-{i}"
-				onclick={() => {
-					index = i;
-					open = true;
-				}}
-			>
-				<img {@attach gallery.attach(i)} src={slide.placeholder} alt={slide.alt} width="80" height="60" />
-			</button>
-		{/each}
-	</div>
+	{#if inlineMode}
+		<button type="button" data-testid="outside">outside</button>
+		<div class="pane" data-testid="inline-pane">
+			<Lightbox bind:this={lb} inline bind:index {slides} {loop} {wheel}>
+				{#snippet toolbar(ctx)}
+					<ToolbarButton label="Fixture action" onclick={() => ctx.next()}>A</ToolbarButton>
+				{/snippet}
+			</Lightbox>
+		</div>
+		<div class="spacer"></div>
+	{:else}
+		<div class="grid">
+			{#each slides as slide, i (slide.src)}
+				<button
+					type="button"
+					data-testid="thumb-{i}"
+					onclick={() => {
+						index = i;
+						open = true;
+					}}
+				>
+					<img {@attach gallery.attach(i)} src={slide.placeholder} alt={slide.alt} width="80" height="60" />
+				</button>
+			{/each}
+		</div>
+	{/if}
 </main>
 
-<Lightbox bind:this={lb} bind:open bind:index {slides} {loop} {wheel} history={useHistory} origin={gallery.origin}>
-	{#snippet toolbar(ctx)}
-		<ToolbarButton label="Fixture action" onclick={() => ctx.next()}>A</ToolbarButton>
-	{/snippet}
-</Lightbox>
+{#if !inlineMode}
+	<Lightbox bind:this={lb} bind:open bind:index {slides} {loop} {wheel} history={useHistory} origin={gallery.origin}>
+		{#snippet toolbar(ctx)}
+			<ToolbarButton label="Fixture action" onclick={() => ctx.next()}>A</ToolbarButton>
+		{/snippet}
+	</Lightbox>
+{/if}
 
 <style>
 	.grid {
@@ -73,5 +88,14 @@
 		width: 100%;
 		height: auto;
 		object-fit: cover;
+	}
+	.pane {
+		position: relative;
+		width: 480px;
+		height: 320px;
+		margin: 16px;
+	}
+	.spacer {
+		height: 1600px;
 	}
 </style>

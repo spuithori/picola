@@ -32,6 +32,11 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
+.pcl--inline {
+	position: absolute;
+	z-index: auto;
+}
+
 .pcl--closing,
 .pcl--closing * {
 	pointer-events: none !important;
@@ -151,6 +156,10 @@
 	padding: max(8px, env(safe-area-inset-top)) 12px 8px;
 }
 
+.pcl--inline .pcl__topbar {
+	padding-top: 8px;
+}
+
 .pcl__counter {
 	font-size: 14px;
 	font-variant-numeric: tabular-nums;
@@ -232,6 +241,10 @@
 	background: var(--pcl-caption-bg);
 	color: var(--pcl-caption-color);
 	padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pcl--inline .pcl__caption {
+	padding-bottom: 0;
 }
 
 .pcl__caption-text {

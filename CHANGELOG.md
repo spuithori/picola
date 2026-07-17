@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 (2026-07-17)
+
+### Features
+- Inline / embedded mode: `<Lightbox inline {slides} />` renders the viewer in place inside a positioned, sized host element instead of as a fullscreen overlay. All gestures (swipe paging, pinch / wheel / double-tap zoom), captions and the toolbar work unchanged; the core mirrors this as `ViewerOptions.inline`
+- Inline semantics: `open` / `origin` / `container` / `history` are ignored, `backdropClose` is forced off, `dismiss` defaults to disabled (opt back in by passing it explicitly), body scroll is never locked, focus is never trapped, and the root is `role="region"` instead of a modal dialog
+- Inline keyboard scoping: arrows / `+` / `-` listen on the viewer root and fire only while focus is inside it (pointer-down focuses the root automatically); Escape is never consumed and propagates to a surrounding dialog
+- New `.pcl--inline` root class switches positioning to `position: absolute; z-index: auto` and drops safe-area padding from the top bar and caption
+
 ## 0.3.2 (2026-07-14)
 
 ### Fixes
